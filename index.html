@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verdé — Modern Tech &amp; Lifestyle Store</title>
+  <meta name="description" content="Verdé is a curated store for premium audio, wearables, bags and desk essentials." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0f172a',
+            panel: '#16213a',
+            line: '#243350',
+            accent: '#10b981',
+            accentdark: '#059669',
+            snow: '#f8fafc',
+            mute: '#94a3b8'
+          },
+          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html, body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+    body.no-scroll { overflow: hidden; }
+    ::selection { background: #10b981; color: #0f172a; }
+    .glass { background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .hero-glow {
+      background:
+        radial-gradient(60% 50% at 20% 10%, rgba(16,185,129,0.22), transparent 70%),
+        radial-gradient(40% 40% at 90% 30%, rgba(56,189,248,0.12), transparent 70%);
+    }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    }
+    .card { transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+    .card:hover { transform: translateY(-6px); border-color: rgba(16,185,129,.55); box-shadow: 0 20px 40px -20px rgba(16,185,129,.35); }
+    .card:hover .card-img { transform: scale(1.06); }
+    .card-img { transition: transform .5s ease; }
+    .fade-in { animation: fadeIn .45s ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .drawer { transform: translateX(100%); transition: transform .35s cubic-bezier(.4,0,.2,1); }
+    .drawer.open { transform: translateX(0); }
+    .overlay { opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+    .overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-panel { opacity: 0; transform: translateY(20px) scale(.97); transition: opacity .25s ease, transform .25s ease; }
+    .modal-wrap.open .modal-panel { opacity: 1; transform: translateY(0) scale(1); }
+    .toast { transform: translateY(30px); opacity: 0; transition: all .3s ease; pointer-events: none; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .field-ok { border-color: #10b981 !important; }
+    .field-bad { border-color: #f43f5e !important; }
+    .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #243350; border-radius: 999px; }
+    a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 2px solid #10b981; outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Skip link -->
+  <a href="#shop" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-accent focus:text-ink focus:px-4 focus:py-2 focus:rounded-lg font-semibold">Skip to products</a>
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 inset-x-0 z-40 glass border-b border-line/70">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Main navigation">
+      <a href="#home" class="flex items-center gap-2.5 group" aria-label="Verdé home">
+        <span class="h-9 w-9 rounded-xl bg-accent/15 border border-accent/40 grid place-items-center">
+          <svg class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4l7 16 7-16"/><path d="M8.5 4h7"/></svg>
+        </span>
+        <span class="text-lg font-extrabold tracking-tight">Verd<span class="text-accent">é</span></span>
+      </a>
+
+      <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-mute">
+        <li><a href="#home" class="hover:text-snow transition-colors">Home</a></li>
+        <li><a href="#features" class="hover:text-snow transition-colors">Why Verdé</a></li>
+        <li><a href="#shop" class="hover:text-snow transition-colors">Shop</a></li>
+        <li><a href="#newsletter" class="hover:text-snow transition-colors">Newsletter</a></li>
+        <li><a href="#footer" class="hover:text-snow transition-colors">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <button id="cartBtn" class="relative h-10 w-10 grid place-items-center rounded-xl border border-line hover:border-accent/60 hover:bg-panel transition" aria-label="Open cart summary">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+          <span id="cartCount" class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 rounded-full bg-accent text-ink text-[11px] font-bold grid place-items-center">0</span>
+        </button>
+        <a href="#shop" class="hidden sm:inline-flex items-center h-10 px-4 rounded-xl bg-accent text-ink text-sm font-semibold hover:bg-accentdark hover:text-snow transition">Shop now</a>
+        <button id="menuOpen" class="md:hidden h-10 w-10 grid place-items-center rounded-xl border border-line hover:bg-panel transition" aria-label="Open menu" aria-controls="drawer" aria-expanded="false">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MOBILE DRAWER -->
+  <div id="drawerOverlay" class="overlay fixed inset-0 z-50 bg-black/60 md:hidden" aria-hidden="true"></div>
+  <aside id="drawer" class="drawer fixed top-0 right-0 bottom-0 z-50 w-[82%] max-w-sm bg-ink border-l border-line md:hidden flex flex-col" aria-label="Mobile menu" aria-hidden="true">
+    <div class="h-16 px-5 flex items-center justify-between border-b border-line">
+      <span class="text-lg font-extrabold">Verd<span class="text-accent">é</span></span>
+      <button id="menuClose" class="h-10 w-10 grid place-items-center rounded-xl border border-line hover:bg-panel" aria-label="Close menu">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <ul class="flex-1 p-5 space-y-1 text-lg font-semibold">
+      <li><a href="#home" class="drawer-link block px-3 py-3 rounded-xl hover:bg-panel">Home</a></li>
+      <li><a href="#features" class="drawer-link block px-3 py-3 rounded-xl hover:bg-panel">Why Verdé</a></li>
+      <li><a href="#shop" class="drawer-link block px-3 py-3 rounded-xl hover:bg-panel">Shop</a></li>
+      <li><a href="#newsletter" class="drawer-link block px-3 py-3 rounded-xl hover:bg-panel">Newsletter</a></li>
+      <li><a href="#footer" class="drawer-link block px-3 py-3 rounded-xl hover:bg-panel">Contact</a></li>
+    </ul>
+    <div class="p-5 border-t border-line">
+      <a href="#shop" class="drawer-link flex justify-center items-center h-12 rounded-xl bg-accent text-ink font-bold">Start shopping</a>
+    </div>
+  </aside>
+
+  <main>
+    <!-- HERO -->
+    <section id="home" class="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden hero-glow">
+      <div class="absolute inset-0 grid-bg" aria-hidden="true"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-14 items-center">
+        <div class="fade-in">
+          <span class="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent">
+            <span class="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></span> New season drop is live
+          </span>
+          <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
+            Gear that works as hard as <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-300">you do.</span>
+          </h1>
+          <p class="mt-6 text-lg text-mute max-w-xl leading-relaxed">
+            Verdé curates premium audio, wearables, bags and desk essentials — designed to last, shipped fast, and backed by a 30-day no-questions return policy.
+          </p>
+          <div class="mt-9 flex flex-col sm:flex-row gap-3.5">
+            <a href="#shop" class="inline-flex justify-center items-center gap-2 h-12 px-7 rounded-xl bg-accent text-ink font-bold hover:bg-accentdark hover:text-snow transition shadow-lg shadow-accent/20">
+              Browse the collection
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="#features" class="inline-flex justify-center items-center h-12 px-7 rounded-xl border border-line text-snow font-semibold hover:border-accent/60 hover:bg-panel transition">Why shop with us</a>
+          </div>
+          <dl class="mt-12 grid grid-cols-3 gap-6 max-w-md">
+            <div><dt class="text-xs text-mute uppercase tracking-wider">Customers</dt><dd class="mt-1 text-2xl font-extrabold">48k+</dd></div>
+            <div><dt class="text-xs text-mute uppercase tracking-wider">Avg. rating</dt><dd class="mt-1 text-2xl font-extrabold">4.9</dd></div>
+            <div><dt class="text-xs text-mute uppercase tracking-wider">Ships in</dt><dd class="mt-1 text-2xl font-extrabold">24h</dd></div>
+          </dl>
+        </div>
+
+        <div class="relative fade-in" style="animation-delay:.15s">
+          <div class="absolute -inset-6 bg-accent/10 blur-3xl rounded-full" aria-hidden="true"></div>
+          <div class="relative rounded-3xl overflow-hidden border border-line bg-panel">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1100&q=80" alt="Premium wireless headphones on a dark surface" class="w-full h-[420px] sm:h-[500px] object-cover" loading="eager" data-fallback />
+            <div class="absolute bottom-4 left-4 right-4 glass border border-line rounded-2xl p-4 flex items-center justify-between">
+              <div>
+                <p class="text-xs text-mute">Bestseller</p>
+                <p class="font-bold">Aurora ANC Headphones</p>
+              </div>
+              <p class="text-accent font-extrabold text-lg">$249</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="py-20 border-y border-line/60 bg-panel/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl">
+          <p class="text-accent text-sm font-semibold tracking-wider uppercase">Why Verdé</p>
+          <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">Shopping without the fine print</h2>
+        </div>
+        <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <article class="rounded-2xl border border-line bg-ink p-6">
+            <div class="h-11 w-11 rounded-xl bg-accent/15 grid place-items-center text-accent">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </div>
+            <h3 class="mt-5 font-bold text-lg">Free fast shipping</h3>
+            <p class="mt-2 text-sm text-mute leading-relaxed">Free delivery on orders over $75, dispatched within 24 hours.</p>
+          </article>
+          <article class="rounded-2xl border border-line bg-ink p-6">
+            <div class="h-11 w-11 rounded-xl bg-accent/15 grid place-items-center text-accent">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <h3 class="mt-5 font-bold text-lg">2-year warranty</h3>
+            <p class="mt-2 text-sm text-mute leading-relaxed">Every product is covered against defects for two full years.</p>
+          </article>
+          <article class="rounded-2xl border border-line bg-ink p-6">
+            <div class="h-11 w-11 rounded-xl bg-accent/15 grid place-items-center text-accent">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+            </div>
+            <h3 class="mt-5 font-bold text-lg">30-day returns</h3>
+            <p class="mt-2 text-sm text-mute leading-relaxed">Not in love with it? Send it back, no questions asked.</p>
+          </article>
+          <article class="rounded-2xl border border-line bg-ink p-6">
+            <div class="h-11 w-11 rounded-xl bg-accent/15 grid place-items-center text-accent">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 class="mt-5 font-bold text-lg">Human support</h3>
+            <p class="mt-2 text-sm text-mute leading-relaxed">Real people answer every inquiry in under four working hours.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOP -->
+    <section id="shop" class="py-20 sm:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div>
+            <p class="text-accent text-sm font-semibold tracking-wider uppercase">The collection</p>
+            <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">Shop all products</h2>
+            <p id="resultCount" class="mt-2 text-sm text-mute" aria-live="polite"></p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <label class="relative flex-1 sm:w-80">
+              <span class="sr-only">Search products</span>
+              <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="searchInput" type="search" placeholder="Search by name or keyword…" autocomplete="off" class="w-full h-12 pl-11 pr-10 rounded-xl bg-panel border border-line text-snow placeholder-mute focus:border-accent transition" />
+              <button id="clearSearch" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 h-8 w-8 grid place-items-center rounded-lg text-mute hover:text-snow hover:bg-line" aria-label="Clear search">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+            </label>
+            <label class="relative">
+              <span class="sr-only">Sort products</span>
+              <select id="sortSelect" class="appearance-none w-full sm:w-52 h-12 pl-4 pr-10 rounded-xl bg-panel border border-line text-snow focus:border-accent transition">
+                <option value="featured">Sort: Featured</option>
+                <option value="price-asc">Price: Low to high</option>
+                <option value="price-desc">Price: High to low</option>
+                <option value="rating">Top rated</option>
+                <option value="name">Name: A to Z</option>
+              </select>
+              <svg class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </label>
+          </div>
+        </div>
+
+        <div id="pills" class="mt-8 flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin" role="group" aria-label="Filter by category"></div>
+
+        <div id="grid" class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+        <div id="emptyState" class="hidden mt-10 rounded-3xl border border-dashed border-line bg-panel/40 py-16 px-6 text-center">
+          <div class="mx-auto h-16 w-16 rounded-2xl bg-accent/10 grid place-items-center text-accent">
+            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6"/></svg>
+          </div>
+          <h3 class="mt-5 text-xl font-bold">No products match your search</h3>
+          <p class="mt-2 text-mute max-w-md mx-auto">We couldn't find anything for <span id="emptyTerm" class="text-snow font-semibold"></span>. Try a different keyword or clear your filters.</p>
+          <button id="resetFilters" class="mt-6 inline-flex items-center h-11 px-6 rounded-xl bg-accent text-ink font-bold hover:bg-accentdark hover:text-snow transition">Reset filters</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section id="newsletter" class="pb-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden rounded-3xl border border-line bg-panel px-6 py-14 sm:px-14 text-center">
+          <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-[36rem] bg-accent/20 blur-3xl rounded-full" aria-hidden="true"></div>
+          <div class="relative">
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Get 10% off your first order</h2>
+            <p class="mt-3 text-mute max-w-xl mx-auto">Join the Verdé list for early access to drops and member-only offers. No spam, unsubscribe anytime.</p>
+            <form id="newsletterForm" class="mt-8 flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" novalidate>
+              <label class="flex-1">
+                <span class="sr-only">Email address</span>
+                <input id="newsEmail" type="email" placeholder="you@example.com" class="w-full h-12 px-4 rounded-xl bg-ink border border-line text-snow placeholder-mute focus:border-accent transition" />
+              </label>
+              <button type="submit" class="h-12 px-7 rounded-xl bg-accent text-ink font-bold hover:bg-accentdark hover:text-snow transition">Subscribe</button>
+            </form>
+            <p id="newsMsg" class="mt-3 text-sm min-h-[1.25rem]" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="footer" class="border-t border-line bg-panel/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+      <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-5">
+        <div class="lg:col-span-2">
+          <a href="#home" class="flex items-center gap-2.5">
+            <span class="h-9 w-9 rounded-xl bg-accent/15 border border-accent/40 grid place-items-center">
+              <svg class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4l7 16 7-16"/><path d="M8.5 4h7"/></svg>
+            </span>
+            <span class="text-lg font-extrabold">Verd<span class="text-accent">é</span></span>
+          </a>
+          <p class="mt-4 text-sm text-mute max-w-sm leading-relaxed">Premium tech and lifestyle essentials, thoughtfully selected and built to last. Designed for people who care about the details.</p>
+          <div class="mt-6 flex gap-3">
+            <a href="#" class="h-10 w-10 grid place-items-center rounded-xl border border-line text-mute hover:text-accent hover:border-accent/60 transition" aria-label="Twitter / X">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2H21.5l-7.1 8.11L22.75 22h-6.54l-5.12-6.7L5.2 22H1.94l7.6-8.69L1.5 2h6.7l4.63 6.1L18.244 2zm-1.14 18h1.8L7.02 3.9H5.1L17.104 20z"/></svg>
+            </a>
+            <a href="#" class="h-10 w-10 grid place-items-center rounded-xl border border-line text-mute hover:text-accent hover:border-accent/60 transition" aria-label="Instagram">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+            </a>
+            <a href="#" class="h-10 w-10 grid place-items-center rounded-xl border border-line text-mute hover:text-accent hover:border-accent/60 transition" aria-label="YouTube">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22.5 7.2a2.8 2.8 0 0 0-2-2C18.8 4.8 12 4.8 12 4.8s-6.8 0-8.5.4a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1 12a29 29 0 0 0 .5 4.8 2.8 2.8 0 0 0 2 2c1.7.4 8.5.4 8.5.4s6.8 0 8.5-.4a2.8 2.8 0 0 0 2-2A29 29 0 0 0 23 12a29 29 0 0 0-.5-4.8z"/><polygon points="9.8 15 15.2 12 9.8 9 9.8 15" fill="currentColor"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wider">Shop</h3>
+          <ul class="mt-4 space-y-3 text-sm text-mute">
+            <li><button type="button" data-cat-link="Audio" class="hover:text-accent transition">Audio</button></li>
+            <li><button type="button" data-cat-link="Wearables" class="hover:text-accent transition">Wearables</button></li>
+            <li><button type="button" data-cat-link="Bags" class="hover:text-accent transition">Bags</button></li>
+            <li><button type="button" data-cat-link="Desk" class="hover:text-accent transition">Desk Setup</button></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wider">Support</h3>
+          <ul class="mt-4 space-y-3 text-sm text-mute">
+            <li><a href="#" class="hover:text-accent transition">Shipping &amp; delivery</a></li>
+            <li><a href="#" class="hover:text-accent transition">Returns &amp; exchanges</a></li>
+            <li><a href="#" class="hover:text-accent transition">Warranty</a></li>
+            <li><a href="#" class="hover:text-accent transition">Order tracking</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wider">Contact</h3>
+          <ul class="mt-4 space-y-3 text-sm text-mute">
+            <li>hello@verde-store.com</li>
+            <li>+1 (555) 014-2290</li>
+            <li>Mon–Fri, 9:00–18:00</li>
+            <li>214 Market Street, Suite 5<br />Portland, OR 97204</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-14 pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-mute">
+        <p>&copy; <span id="year"></span> Verdé Supply Co. All rights reserved.</p>
+        <ul class="flex gap-6">
+          <li><a href="#" class="hover:text-accent transition">Privacy</a></li>
+          <li><a href="#" class="hover:text-accent transition">Terms</a></li>
+          <li><a href="#" class="hover:text-accent transition">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PRODUCT MODAL -->
+  <div id="modal" class="modal-wrap fixed inset-0 z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <div id="modalBackdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+    <div class="modal-panel relative w-full max-w-5xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-3xl border border-line bg-ink shadow-2xl">
+      <button id="modalClose" class="absolute top-4 right-4 z-10 h-10 w-10 grid place-items-center rounded-xl bg-ink/80 border border-line hover:bg-panel transition" aria-label="Close dialog">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="grid md:grid-cols-2">
+        <div class="relative bg-panel md:rounded-l-3xl overflow-hidden">
+          <img id="modalImg" src="" alt="" class="w-full h-72 md:h-full object-cover" data-fallback />
+          <span id="modalBadge" class="absolute top-4 left-4 rounded-full bg-accent text-ink text-xs font-bold px-3 py-1"></span>
+        </div>
+        <div class="p-6 sm:p-8">
+          <p id="modalCat" class="text-accent text-xs font-semibold tracking-wider uppercase"></p>
+          <h3 id="modalTitle" class="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight pr-10"></h3>
+          <div class="mt-3 flex items-center gap-3">
+            <div id="modalStars" class="flex" aria-hidden="true"></div>
+            <span id="modalRating" class="text-sm text-mute"></span>
+          </div>
+          <p id="modalPrice" class="mt-4 text-3xl font-extrabold"></p>
+          <p id="modalDesc" class="mt-4 text-mute leading-relaxed"></p>
+          <ul id="modalSpecs" class="mt-5 grid grid-cols-1 gap-2 text-sm"></ul>
+
+          <button id="modalAdd" class="mt-7 w-full h-12 rounded-xl bg-accent text-ink font-bold hover:bg-accentdark hover:text-snow transition inline-flex items-center justify-center gap-2">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+            Add to cart
+          </button>
+
+          <div class="mt-8 pt-6 border-t border-line">
+            <h4 class="font-bold">Have a question about this product?</h4>
+            <p class="text-sm text-mute mt-1">Send us a message and we'll reply within four working hours.</p>
+            <form id="inquiryForm" class="mt-4 space-y-3.5" novalidate>
+              <div>
+                <label for="inqName" class="block text-sm font-medium mb-1.5">Full name</label>
+                <input id="inqName" name="name" type="text" autocomplete="name" placeholder="Jane Doe" class="w-full h-11 px-4 rounded-xl bg-panel border border-line text-snow placeholder-mute transition" />
+                <p class="err mt-1 text-xs text-rose-400 min-h-[1rem]" data-err="inqName"></p>
+              </div>
+              <div>
+                <label for="inqEmail" class="block text-sm font-medium mb-1.5">Email</label>
+                <input id="inqEmail" name="email" type="email" autocomplete="email" placeholder="jane@example.com" class="w-full h-11 px-4 rounded-xl bg-panel border border-line text-snow placeholder-mute transition" />
+                <p class="err mt-1 text-xs text-rose-400 min-h-[1rem]" data-err="inqEmail"></p>
+              </div>
+              <div>
+                <label for="inqMsg" class="block text-sm font-medium mb-1.5">Message</label>
+                <textarea id="inqMsg" name="message" rows="3" maxlength="300" placeholder="Is this compatible with…?" class="w-full px-4 py-3 rounded-xl bg-panel border border-line text-snow placeholder-mute transition resize-none"></textarea>
+                <div class="flex justify-between">
+                  <p class="err mt-1 text-xs text-rose-400 min-h-[1rem]" data-err="inqMsg"></p>
+                  <p id="msgCount" class="mt-1 text-xs text-mute">0 / 300</p>
+                </div>
+              </div>
+              <button id="inqSubmit" type="submit" disabled class="w-full h-12 rounded-xl border border-accent/50 text-accent font-bold hover:bg-accent hover:text-ink transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-accent">Send inquiry</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART SUMMARY MODAL -->
+  <div id="cartModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-hidden="true">
+    <div id="cartBackdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+    <div class="relative w-full max-w-md max-h-[85vh] overflow-y-auto scrollbar-thin rounded-3xl border border-line bg-ink p-6 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 id="cartTitle" class="text-xl font-extrabold">Your cart</h3>
+        <button id="cartClose" class="h-9 w-9 grid place-items-center rounded-xl border border-line hover:bg-panel" aria-label="Close cart">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <ul id="cartList" class="mt-5 space-y-3"></ul>
+      <div id="cartEmpty" class="hidden py-10 text-center text-mute">Your cart is empty. Add something you love.</div>
+      <div id="cartFooter" class="mt-5 pt-5 border-t border-line">
+        <div class="flex justify-between font-bold text-lg"><span>Total</span><span id="cartTotal">$0</span></div>
+        <button id="checkoutBtn" class="mt-4 w-full h-12 rounded-xl bg-accent text-ink font-bold hover:bg-accentdark hover:text-snow transition">Checkout</button>
+        <button id="clearCartBtn" class="mt-2 w-full h-10 rounded-xl text-sm text-mute hover:text-snow transition">Clear cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] glass border border-accent/40 text-snow text-sm font-medium rounded-xl px-5 py-3 shadow-xl flex items-center gap-2.5" role="status" aria-live="polite">
+    <svg class="h-5 w-5 text-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+    <span id="toastText"></span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ---------- DATA ---------- */
+      var PRODUCTS = [
+        {
+          id: 1, name: 'Aurora ANC Headphones', category: 'Audio', price: 249, rating: 4.8, reviews: 1284, badge: 'Bestseller',
+          image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80',
+          description: 'Over-ear wireless headphones with adaptive active noise cancelling, 40mm drivers and a plush memory-foam fit built for all-day listening.',
+          specs: ['Up to 45 hours battery life', 'Adaptive hybrid ANC with transparency mode', 'Bluetooth 5.3 multipoint pairing', 'USB-C fast charge: 10 min = 5 hours']
+        },
+        {
+          id: 2, name: 'Meridian Chronograph Watch', category: 'Wearables', price: 329, rating: 4.7, reviews: 642, badge: 'New',
+          image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80',
+          description: 'A refined analog chronograph with a sapphire-coated crystal, stainless steel case and a soft Italian leather strap that wears in beautifully.',
+          specs: ['40mm stainless steel case', 'Sapphire-coated crystal glass', '50m water resistance', 'Quick-release leather strap']
+        },
+        {
+          id: 3, name: 'Trailhead 28L Backpack', category: 'Bags', price: 139, rating: 4.6, reviews: 893, badge: '',
+          image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80',
+          description: 'A weatherproof everyday pack with a padded 16-inch laptop sleeve, hidden anti-theft pocket and comfortable ergonomic shoulder straps.',
+          specs: ['28 litre capacity', 'Water-resistant recycled fabric', 'Padded 16" laptop compartment', 'Luggage pass-through strap']
+        },
+        {
+          id: 4, name: 'Forge 75 Mechanical Keyboard', category: 'Desk', price: 159, rating: 4.9, reviews: 2107, badge: 'Top rated',
+          image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80',
+          description: 'A gasket-mounted 75% keyboard with hot-swappable switches, PBT keycaps and a satisfying, dampened typing sound out of the box.',
+          specs: ['Hot-swappable 5-pin switches', 'Gasket-mount aluminium case', 'Bluetooth, 2.4GHz and USB-C wired', 'Per-key RGB with onboard memory']
+        },
+        {
+          id: 5, name: 'Stride Runner Sneakers', category: 'Wearables', price: 119, rating: 4.4, reviews: 517, badge: 'Sale',
+          image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
+          description: 'Lightweight performance sneakers with a responsive foam midsole and breathable engineered mesh upper for daily runs and city miles.',
+          specs: ['Responsive dual-density foam', 'Breathable engineered mesh upper', 'Durable rubber outsole', 'Weighs just 255g (size 9)']
+        },
+        {
+          id: 6, name: 'Pulse Portable Speaker', category: 'Audio', price: 89, rating: 4.5, reviews: 1760, badge: '',
+          image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=80',
+          description: 'A compact waterproof Bluetooth speaker with surprisingly deep bass, 360-degree sound and a battery that lasts through the whole weekend.',
+          specs: ['IP67 waterproof and dustproof', '20 hours of playtime', '360-degree stereo sound', 'Pairs with a second speaker']
+        },
+        {
+          id: 7, name: 'Lumen Desk Lamp', category: 'Desk', price: 74, rating: 4.6, reviews: 388, badge: '',
+          image: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=900&q=80',
+          description: 'A minimalist LED desk lamp with five colour temperatures, stepless dimming and a wireless charging base for your phone.',
+          specs: ['2700K to 6500K colour range', 'Stepless touch dimming', '10W Qi wireless charging base', 'Flicker-free eye-care LEDs']
+        },
+        {
+          id: 8, name: 'Vista Mirrorless Camera', category: 'Tech', price: 899, rating: 4.8, reviews: 276, badge: 'Premium',
+          image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=900&q=80',
+          description: 'A compact 26MP mirrorless camera with fast hybrid autofocus, in-body stabilisation and 4K 60p video for creators who travel light.',
+          specs: ['26MP APS-C sensor', '5-axis in-body stabilisation', '4K 60p 10-bit video', 'Dual UHS-II card slots']
+        }
+      ];
+
+      var CATEGORIES = ['All', 'Audio', 'Wearables', 'Bags', 'Desk', 'Tech'];
+      var CATEGORY_LABELS = { Desk: 'Desk Setup' };
+
+      /* ---------- STATE ---------- */
+      var state = { query: '', category: 'All', sort: 'featured', cart: [], activeProduct: null, lastFocus: null };
+
+      /* ---------- HELPERS ---------- */
+      function $(sel, root) { return (root || document).querySelector(sel); }
+      function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+      function money(n) { return '$' + n.toLocaleString('en-US'); }
+      function esc(str) {
+        return String(str).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+      function starsSvg(rating) {
+        var html = '';
+        for (var i = 1; i <= 5; i++) {
+          var fill = rating >= i ? '#10b981' : (rating >= i - 0.5 ? 'url(#half)' : '#243350');
+          html += '<svg class="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="half"><stop offset="50%" stop-color="#10b981"/><stop offset="50%" stop-color="#243350"/></linearGradient></defs><path fill="' + fill + '" d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>';
+        }
+        return html;
+      }
+      var fallbackSvg = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16213a"/><stop offset="1" stop-color="#0f172a"/></linearGradient></defs><rect width="900" height="700" fill="url(#g)"/><g fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(375 275)"><rect x="0" y="0" width="150" height="120" rx="14"/><circle cx="45" cy="42" r="14"/><path d="M0 100l45-40 35 30 25-20 45 40"/></g></svg>'
+      );
+      function attachFallback(img) {
+        img.addEventListener('error', function handler() {
+          img.removeEventListener('error', handler);
+          img.src = fallbackSvg;
+        });
+      }
+
+      /* ---------- NAVBAR / DRAWER ---------- */
+      var drawer = $('#drawer'), drawerOverlay = $('#drawerOverlay'), menuOpen = $('#menuOpen');
+      function openDrawer() {
+        drawer.classList.add('open'); drawerOverlay.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false'); menuOpen.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('no-scroll');
+        $('#menuClose').focus();
+      }
+      function closeDrawer() {
+        drawer.classList.remove('open'); drawerOverlay.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true'); menuOpen.setAttribute('aria-expanded', 'false');
+        if (!anyModalOpen()) document.body.classList.remove('no-scroll');
+      }
+      menuOpen.addEventListener('click', openDrawer);
+      $('#menuClose').addEventListener('click', closeDrawer);
+      drawerOverlay.addEventListener('click', closeDrawer);
+      $$('.drawer-link').forEach(function (a) { a.addEventListener('click', closeDrawer); });
+      window.addEventListener('resize', function () { if (window.innerWidth >= 768) closeDrawer(); });
+
+      /* ---------- TOAST ---------- */
+      var toastTimer;
+      function toast(msg) {
+        $('#toastText').textContent = msg;
+        var t = $('#toast');
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+      }
+
+      /* ---------- CATALOG ---------- */
+      var grid = $('#grid'), pills = $('#pills'), emptyState = $('#emptyState');
+      var searchInput = $('#searchInput'), clearSearch = $('#clearSearch');
+
+      function renderPills() {
+        pills.innerHTML = CATEGORIES.map(function (c) {
+          var active = state.category === c;
+          var count = c === 'All' ? PRODUCTS.length : PRODUCTS.filter(function (p) { return p.category === c; }).length;
+          return '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + active + '" class="shrink-0 h-10 px-4 rounded-full border text-sm font-semibold transition ' +
+            (active ? 'bg-accent text-ink border-accent' : 'border-line text-mute hover:text-snow hover:border-accent/60') + '">' +
+            esc(CATEGORY_LABELS[c] || c) + ' <span class="opacity-70 font-medium">' + count + '</span></button>';
+        }).join('');
+      }
+
+      function getFiltered() {
+        var q = state.query.trim().toLowerCase();
+        var list = PRODUCTS.filter(function (p) {
+          var catOk = state.category === 'All' || p.category === state.category;
+          if (!catOk) return false;
+          if (!q) return true;
+          var hay = (p.name + ' ' + p.category + ' ' + p.description + ' ' + p.specs.join(' ')).toLowerCase();
+          return q.split(/\s+/).every(function (w) { return hay.indexOf(w) !== -1; });
+        });
+        switch (state.sort) {
+          case 'price-asc': list.sort(function (a, b) { return a.price - b.price; }); break;
+          case 'price-desc': list.sort(function (a, b) { return b.price - a.price; }); break;
+          case 'rating': list.sort(function (a, b) { return b.rating - a.rating; }); break;
+          case 'name': list.sort(function (a, b) { return a.name.localeCompare(b.name); }); break;
+          default: list.sort(function (a, b) { return a.id - b.id; });
+        }
+        return list;
+      }
+
+      function renderGrid() {
+        var list = getFiltered();
+        $('#resultCount').textContent = list.length === 1 ? 'Showing 1 product' : 'Showing ' + list.length + ' products';
+        if (!list.length) {
+          grid.innerHTML = '';
+          grid.classList.add('hidden');
+          emptyState.classList.remove('hidden');
+          $('#emptyTerm').textContent = state.query.trim() ? '“' + state.query.trim() + '”' : 'this category';
+          return;
+        }
+        emptyState.classList.add('hidden');
+        grid.classList.remove('hidden');
+        grid.innerHTML = list.map(function (p, i) {
+          return '' +
+            '<article class="card fade-in group rounded-2xl border border-line bg-panel overflow-hidden flex flex-col" style="animation-delay:' + (i * 50) + 'ms">' +
+              '<button type="button" data-open="' + p.id + '" class="relative block aspect-[4/3] overflow-hidden bg-ink text-left" aria-label="View details for ' + esc(p.name) + '">' +
+                '<img src="' + p.image + '" alt="' + esc(p.name) + '" loading="lazy" class="card-img h-full w-full object-cover" />' +
+                (p.badge ? '<span class="absolute top-3 left-3 rounded-full bg-accent text-ink text-[11px] font-bold px-2.5 py-1">' + esc(p.badge) + '</span>' : '') +
+              '</button>' +
+              '<div class="p-5 flex flex-col flex-1">' +
+                '<p class="text-[11px] font-semibold uppercase tracking-wider text-accent">' + esc(CATEGORY_LABELS[p.category] || p.category) + '</p>' +
+                '<h3 class="mt-1.5 font-bold text-lg leading-snug">' + esc(p.name) + '</h3>' +
+                '<div class="mt-2 flex items-center gap-2"><div class="flex">' + starsSvg(p.rating) + '</div><span class="text-xs text-mute">' + p.rating.toFixed(1) + ' (' + p.reviews.toLocaleString('en-US') + ')</span></div>' +
+                '<div class="mt-auto pt-5 flex items-center justify-between gap-3">' +
+                  '<span class="text-xl font-extrabold">' + money(p.price) + '</span>' +
+                  '<div class="flex gap-2">' +
+                    '<button type="button" data-open="' + p.id + '" class="h-10 px-3.5 rounded-xl border border-line text-sm font-semibold hover:border-accent/60 hover:bg-ink transition">Details</button>' +
+                    '<button type="button" data-add="' + p.id + '" class="h-10 w-10 grid place-items-center rounded-xl bg-accent text-ink hover:bg-accentdark hover:text-snow transition" aria-label="Add ' + esc(p.name) + ' to cart">' +
+                      '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>' +
+                    '</button>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</article>';
+        }).join('');
+        $$('img', grid).forEach(attachFallback);
+      }
+
+      function update() {
+        clearSearch.classList.toggle('hidden', !state.query);
+        renderPills();
+        renderGrid();
+      }
+
+      var searchTimer;
+      searchInput.addEventListener('input', function (e) {
+        clearTimeout(searchTimer);
+        var v = e.target.value;
+        searchTimer = setTimeout(function () { state.query = v; update(); }, 90);
+        clearSearch.classList.toggle('hidden', !v);
+      });
+      clearSearch.addEventListener('click', function () { searchInput.value = ''; state.query = ''; update(); searchInput.focus(); });
+      $('#sortSelect').addEventListener('change', function (e) { state.sort = e.target.value; update(); });
+      pills.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-cat]');
+        if (!b) return;
+        state.category = b.getAttribute('data-cat');
+        update();
+      });
+      $('#resetFilters').addEventListener('click', function () {
+        state.query = ''; state.category = 'All'; state.sort = 'featured';
+        searchInput.value = ''; $('#sortSelect').value = 'featured';
+        update();
+      });
+      $$('[data-cat-link]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.category = b.getAttribute('data-cat-link');
+          state.query = ''; searchInput.value = '';
+          update();
+          $('#shop').scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+
+      grid.addEventListener('click', function (e) {
+        var openBtn = e.target.closest('[data-open]');
+        var addBtn = e.target.closest('[data-add]');
+        if (addBtn) { addToCart(parseInt(addBtn.getAttribute('data-add'), 10)); return; }
+        if (openBtn) { openModal(parseInt(openBtn.getAttribute('data-open'), 10)); }
+      });
+
+      /* ---------- CART ---------- */
+      function findProduct(id) { return PRODUCTS.filter(function (p) { return p.id === id; })[0]; }
+      function addToCart(id) {
+        var p = findProduct(id);
+        if (!p) return;
+        var line = state.cart.filter(function (l) { return l.id === id; })[0];
+        if (line) { line.qty += 1; } else { state.cart.push({ id: id, qty: 1 }); }
+        updateCartBadge();
+        toast(p.name + ' added to cart');
+      }
+      function cartCount() { return state.cart.reduce(function (s, l) { return s + l.qty; }, 0); }
+      function cartTotal() { return state.cart.reduce(function (s, l) { return s + findProduct(l.id).price * l.qty; }, 0); }
+      function updateCartBadge() {
+        $('#cartCount').textContent = cartCount();
+        if (isOpen($('#cartModal'))) renderCart();
+      }
+      function renderCart() {
+        var list = $('#cartList');
+        var has = state.cart.length > 0;
+        $('#cartEmpty').classList.toggle('hidden', has);
+        $('#cartFooter').classList.toggle('hidden', !has);
+        list.innerHTML = state.cart.map(function (l) {
+          var p = findProduct(l.id);
+          return '<li class="flex gap-3 rounded-2xl border border-line bg-panel p-3">' +
+            '<img src="' + p.image + '" alt="" class="h-16 w-16 rounded-xl object-cover" />' +
+            '<div class="flex-1 min-w-0">' +
+              '<p class="font-semibold truncate">' + esc(p.name) + '</p>' +
+              '<p class="text-sm text-mute">' + money(p.price) + '</p>' +
+              '<div class="mt-1.5 flex items-center gap-2">' +
+                '<button type="button" data-dec="' + p.id + '" class="h-7 w-7 rounded-lg border border-line hover:bg-ink" aria-label="Decrease quantity">−</button>' +
+                '<span class="w-6 text-center text-sm font-semibold">' + l.qty + '</span>' +
+                '<button type="button" data-inc="' + p.id + '" class="h-7 w-7 rounded-lg border border-line hover:bg-ink" aria-label="Increase quantity">+</button>' +
+              '</div>' +
+            '</div>' +
+            '<button type="button" data-rm="' + p.id + '" class="self-start h-8 w-8 grid place-items-center rounded-lg text-mute hover:text-rose-400" aria-label="Remove ' + esc(p.name) + '">' +
+              '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>' +
+            '</button>' +
+          '</li>';
+        }).join('');
+        $('#cartTotal').textContent = money(cartTotal());
+      }
+      $('#cartList').addEventListener('click', function (e) {
+        var inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]'), rm = e.target.closest('[data-rm]');
+        var id = inc ? +inc.getAttribute('data-inc') : dec ? +dec.getAttribute('data-dec') : rm ? +rm.getAttribute('data-rm') : null;
+        if (id === null) return;
+        var line = state.cart.filter(function (l) { return l.id === id; })[0];
+        if (!line) return;
+        if (inc) line.qty += 1;
+        if (dec) line.qty -= 1;
+        if (rm || line.qty <= 0) state.cart = state.cart.filter(function (l) { return l.id !== id; });
+        updateCartBadge();
+        renderCart();
+      });
+      $('#clearCartBtn').addEventListener('click', function () { state.cart = []; updateCartBadge(); renderCart(); });
+      $('#checkoutBtn').addEventListener('click', function () {
+        var n = cartCount(), t = cartTotal();
+        state.cart = []; updateCartBadge(); renderCart(); closeOverlay($('#cartModal'));
+        toast('Order placed — ' + n + ' item' + (n === 1 ? '' : 's') + ', ' + money(t));
+      });
+
+      /* ---------- OVERLAY (MODAL) ENGINE ---------- */
+      function isOpen(el) { return el.classList.contains('open'); }
+      function anyModalOpen() { return isOpen($('#modal')) || isOpen($('#cartModal')) || drawer.classList.contains('open'); }
+      function openOverlay(el) {
+        state.lastFocus = document.activeElement;
+        el.classList.remove('hidden'); el.classList.add('flex');
+        void el.offsetWidth;
+        el.classList.add('open');
+        el.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('no-scroll');
+      }
+      function closeOverlay(el) {
+        el.classList.remove('open');
+        el.setAttribute('aria-hidden', 'true');
+        setTimeout(function () {
+          if (!isOpen(el)) { el.classList.add('hidden'); el.classList.remove('flex'); }
+        }, 250);
+        if (!drawer.classList.contains('open') && !(el !== $('#modal') && isOpen($('#modal'))) && !(el !== $('#cartModal') && isOpen($('#cartModal')))) {
+          document.body.classList.remove('no-scroll');
+        }
+        if (state.lastFocus && typeof state.lastFocus.focus === 'function') state.lastFocus.focus();
+      }
+
+      /* ---------- PRODUCT MODAL ---------- */
+      var modal = $('#modal');
+      function openModal(id) {
+        var p = findProduct(id);
+        if (!p) return;
+        state.activeProduct = p;
+        var img = $('#modalImg');
+        img.src = p.image; img.alt = p.name;
+        attachFallback(img);
+        $('#modalBadge').textContent = p.badge;
+        $('#modalBadge').classList.toggle('hidden', !p.badge);
+        $('#modalCat').textContent = CATEGORY_LABELS[p.category] || p.category;
+        $('#modalTitle').textContent = p.name;
+        $('#modalStars').innerHTML = starsSvg(p.rating);
+        $('#modalRating').textContent = p.rating.toFixed(1) + ' · ' + p.reviews.toLocaleString('en-US') + ' reviews';
+        $('#modalPrice').textContent = money(p.price);
+        $('#modalDesc').textContent = p.description;
+        $('#modalSpecs').innerHTML = p.specs.map(function (s) {
+          return '<li class="flex items-start gap-2.5"><svg class="h-5 w-5 mt-0.5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="text-mute">' + esc(s) + '</span></li>';
+        }).join('');
+        resetInquiry();
+        openOverlay(modal);
+        modal.querySelector('.modal-panel').scrollTop = 0;
+        setTimeout(function () { $('#modalClose').focus(); }, 60);
+      }
+      $('#modalClose').addEventListener('click', function () { closeOverlay(modal); });
+      $('#modalBackdrop').addEventListener('click', function () { closeOverlay(modal); });
+      $('#modalAdd').addEventListener('click', function () {
+        if (state.activeProduct) addToCart(state.activeProduct.id);
+      });
+
+      /* ---------- INQUIRY FORM: LIVE VALIDATION ---------- */
+      var inqName = $('#inqName'), inqEmail = $('#inqEmail'), inqMsg = $('#inqMsg'), inqSubmit = $('#inqSubmit');
+      var touched = { inqName: false, inqEmail: false, inqMsg: false };
+      var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+      function validators() {
+        return {
+          inqName: function (v) {
+            v = v.trim();
+            if (!v) return 'Please enter your name.';
+            if (v.length < 2) return 'Name must be at least 2 characters.';
+            if (!/^[\p{L}][\p{L}\s'.-]*$/u.test(v)) return 'Name can only contain letters, spaces and . - \'';
+            return '';
+          },
+          inqEmail: function (v) {
+            v = v.trim();
+            if (!v) return 'Please enter your email address.';
+            if (!emailRe.test(v)) return 'Enter a valid email, like name@example.com.';
+            return '';
+          },
+          inqMsg: function (v) {
+            v = v.trim();
+            if (!v) return 'Please write a message.';
+            if (v.length < 10) return 'Message must be at least 10 characters (' + v.length + '/10).';
+            return '';
+          }
+        };
+      }
+      var V = validators();
+      var fields = { inqName: inqName, inqEmail: inqEmail, inqMsg: inqMsg };
+
+      function showFieldState(id, showError) {
+        var el = fields[id];
+        var msg = V[id](el.value);
+        var errEl = $('[data-err="' + id + '"]');
+        el.classList.remove('field-ok', 'field-bad');
+        if (showError && msg) { el.classList.add('field-bad'); errEl.textContent = msg; el.setAttribute('aria-invalid', 'true'); }
+        else if (!msg && el.value.trim()) { el.classList.add('field-ok'); errEl.textContent = ''; el.setAttribute('aria-invalid', 'false'); }
+        else { errEl.textContent = ''; el.removeAttribute('aria-invalid'); }
+        return !msg;
+      }
+      function formValid() { return Object.keys(fields).every(function (id) { return !V[id](fields[id].value); }); }
+      function refreshSubmit() { inqSubmit.disabled = !formValid(); }
+
+      Object.keys(fields).forEach(function (id) {
+        fields[id].addEventListener('input', function () {
+          if (id === 'inqMsg') $('#msgCount').textContent = fields[id].value.length + ' / 300';
+          showFieldState(id, touched[id]);
+          refreshSubmit();
+        });
+        fields[id].addEventListener('blur', function () { touched[id] = true; showFieldState(id, true); });
+      });
+
+      function resetInquiry() {
+        $('#inquiryForm').reset();
+        Object.keys(touched).forEach(function (k) { touched[k] = false; showFieldState(k, false); });
+        $('#msgCount').textContent = '0 / 300';
+        inqSubmit.disabled = true;
+      }
+
+      $('#inquiryForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        Object.keys(touched).forEach(function (k) { touched[k] = true; });
+        var ok = true;
+        Object.keys(fields).forEach(function (id) { if (!showFieldState(id, true)) ok = false; });
+        if (!ok) { var firstBad = $('.field-bad', modal); if (firstBad) firstBad.focus(); return; }
+        var name = inqName.value.trim().split(/\s+/)[0];
+        var product = state.activeProduct ? state.activeProduct.name : 'this product';
+        inqSubmit.disabled = true;
+        inqSubmit.textContent = 'Sending…';
+        setTimeout(function () {
+          inqSubmit.textContent = 'Send inquiry';
+          resetInquiry();
+          closeOverlay(modal);
+          toast('Thanks, ' + name + '! We\'ll reply about the ' + product + ' soon.');
+        }, 700);
+      });
+
+      /* ---------- CART MODAL OPEN/CLOSE ---------- */
+      var cartModal = $('#cartModal');
+      $('#cartBtn').addEventListener('click', function () { renderCart(); openOverlay(cartModal); setTimeout(function () { $('#cartClose').focus(); }, 60); });
+      $('#cartClose').addEventListener('click', function () { closeOverlay(cartModal); });
+      $('#cartBackdrop').addEventListener('click', function () { closeOverlay(cartModal); });
+
+      /* ---------- NEWSLETTER ---------- */
+      var newsMsg = $('#newsMsg'), newsEmail = $('#newsEmail');
+      $('#newsletterForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = newsEmail.value.trim();
+        if (!emailRe.test(v)) {
+          newsMsg.textContent = 'Please enter a valid email address.';
+          newsMsg.className = 'mt-3 text-sm min-h-[1.25rem] text-rose-400';
+          newsEmail.classList.add('field-bad');
+          return;
+        }
+        newsEmail.classList.remove('field-bad');
+        newsMsg.textContent = 'You\'re in! Check your inbox for your 10% code.';
+        newsMsg.className = 'mt-3 text-sm min-h-[1.25rem] text-accent';
+        newEmailReset();
+      });
+      function newEmailReset() { newsEmail.value = ''; }
+      newsEmail.addEventListener('input', function () {
+        newsEmail.classList.remove('field-bad');
+        if (newsMsg.className.indexOf('rose') !== -1) newsMsg.textContent = '';
+      });
+
+      /* ---------- KEYBOARD: ESC + FOCUS TRAP ---------- */
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (isOpen(modal)) closeOverlay(modal);
+          else if (isOpen(cartModal)) closeOverlay(cartModal);
+          else if (drawer.classList.contains('open')) closeDrawer();
+          return;
+        }
+        if (e.key === 'Tab') {
+          var active = isOpen(modal) ? modal : isOpen(cartModal) ? cartModal : drawer.classList.contains('open') ? drawer : null;
+          if (!active) return;
+          var focusables = $$('a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])', active)
+            .filter(function (el) { return el.offsetParent !== null; });
+          if (!focusables.length) return;
+          var first = focusables[0], last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+
+      /* ---------- INIT ---------- */
+      $$('img[data-fallback]').forEach(attachFallback);
+      $('#year').textContent = new Date().getFullYear();
+      update();
+    })();
+  </script>
+</body>
+</html>
